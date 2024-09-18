@@ -17,6 +17,8 @@ Qwen的整体架构与Llama2类似，如下图所示:
 # 小经验Notes
 - 我们可以直接把人家的library clone 到本地， 然后直接在script里面import本地的。但是要记得改名字加后缀，不然会跟library重名。
 - 除了一些网络构造的代码，还会有一些工程代码，去fine-tune一些小细节。
+- torch.contiguous() 返回一个内存连续的tensor，否则在GPU上会出现错误。比如说我们把x转置后存进y，那么y的内存就不是连续的，他只是更改了x的属性，所以会出现y在内存空间里是东一块儿西一块儿的情况。
+- 所谓的残差就是，copy一份`hidden_states`，经过一系列操作后，与原来的`hidden_states`相加。这么做的原因是因为他这个模型大，很容易出现梯度爆炸。
 
 # 1 Qwen2Config
 `Qwen2Config`中包含一些自定义的超参数，例如`vocab_size`, `hidden_size`, `intermediate_size`,`num_hidden_layers`,`num_attention_heads`,`max_position_embeddings`等。\
@@ -223,7 +225,7 @@ rope_theta (`float`, *optional*, defaults to 10000.0):
   - emb将二者cat（连接）起来，得到dim维度，每dim/2一循环
   - 应用旋转：在取出位置编码信息cos与sin的时候，就是将seq的部分切出来，原先设置的1024是最大pos编码，每次用的时候只取当下seq_len的即可，1024代表位置特征，可以自行设置
 - 将`key_states`和`value_states`重复`group`次，再执行`dot attn`操作。
-    - 就是llama2中的rqa，对key和value的扩展，保证扩展至与query相同大小，对query无操作。
+    - 就是llama2中的gqa，对key和value的扩展，保证扩展至与query相同大小，对query无操作。
 - 在`dot attn`操作后得到`attn_weights`,加上`attention_mask`从而实现读取掩盖操作，在经过`softmax`与`value_states`相乘。得到`attn_output`。
 - 再将上述的`attn_output`进行`reshape`操作，送入`o_proj`，得到最终的输出。  
 
