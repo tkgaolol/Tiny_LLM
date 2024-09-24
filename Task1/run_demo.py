@@ -1,3 +1,6 @@
+import sys
+sys.path.append("..")
+
 from transformers_100.src.transformers.models.qwen2 import Qwen2Config, Qwen2Model
 import torch
 
