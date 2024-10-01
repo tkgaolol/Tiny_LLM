@@ -8,9 +8,9 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "run_demo.py",
+            "program": "inference.py",
             "console": "integratedTerminal",
-            "cwd": "/home/gorden123/Desktop/Tiny_LLM/Task1"
+            "cwd": "/home/gorden123/Desktop/Tiny_LLM/Task4"
         }
     ]
 }
